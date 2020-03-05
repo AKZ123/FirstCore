@@ -21,20 +21,44 @@ namespace FirstCore.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //Default 1 && Part: 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
+            // for access file/folder wwwroot(css,images,js,lib=>bootstrap,jquery)
+            app.UseStaticFiles();
+            //Default 2
             app.UseRouting();
+            //app.UseMvcWithDefaultRoute();
+
+
+            //app.UseMvc(routes =>
+            //{
+            //    routes.MapRoute( "default","{controller=Home}/{action=Index}/{id?}");
+            //});
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            //app.Run(async(context) => 
+            //{
+            //     await context.Response.WriteAsync("Hello Word 12!");
+            //});
+
+            //Default 3
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapGet("/", async context =>
+            //    {
+            //        await context.Response.WriteAsync("Hello World!");
+            //    });
+            //});
         }
     }
 }
