@@ -26,7 +26,7 @@ namespace FirstCore.Web
         {
             //Part: 16,
             services.AddMvc().AddXmlSerializerFormatters();
-            //Part:19
+            //Part:19,44
             services.AddSingleton<IEmployeeRepository, MockEmployeeRepository>();
         }
 
@@ -46,10 +46,10 @@ namespace FirstCore.Web
             //app.UseMvcWithDefaultRoute();
 
 
-            //Part: 32
+            //Part: 32,36
             //app.UseMvc(routes =>
             //{
-            //    routes.MapRoute( "default","{controller=Home}/{action=Index}/{id?}");
+            //    routes.MapRoute( "default","Kader/{controller=Home}/{action=Index}/{id?}");
             //});
             app.UseEndpoints(endpoints =>
             {

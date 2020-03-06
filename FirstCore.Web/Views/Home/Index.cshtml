@@ -18,11 +18,17 @@
         <div class="card-header">
             <h3>@employee.Name</h3>
         </div>
-        <img class="card-img-top" src="~/images/noimage.jpg" />
+        <img class="card-img-top" src="~/images/noimage.jpg" asp-append-version="true" />
         <div class="card-footer text-center">
-            <a href="#" class="btn btn-primary">View</a>
-            <a href="#" class="btn btn-primary">Edit</a>
-            <a href="#" class="btn btn-primary">Delete</a>
+
+            @* Part:35 *@
+            <a asp-controller="Home" asp-action="Details" asp-route-id="@employee.Id" class="btn btn-primary m-1">View</a>
+            @*<a href="@Url.Action("Details","Home",new { id=employee.Id})" class="btn btn-primary">View</a>
+            @Html.ActionLink("View", "Details", "Home", new { id = employee.Id })
+            <a href="/Home/Details/@employee.Id" class="btn btn-primary">View</a>*@
+
+            <a href="#" class="btn btn-primary m-1">Edit</a>
+            <a href="#" class="btn btn-primary m-1">Delete</a>
         </div>
     </div>
     }

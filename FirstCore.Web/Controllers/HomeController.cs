@@ -43,6 +43,24 @@ namespace FirstCore.Web.Controllers
             return View(homeDetailsViewModel);
         }
 
+        //Part:40
+        [HttpGet]
+        public ViewResult Create()
+        {
+            return View();
+        }
+
+        //Part:41,42
+        [HttpPost]
+        public IActionResult Create(Employee employee)
+        {
+            if (ModelState.IsValid)
+            {
+                Employee newEmployee = _employeeRepository.Add(employee);
+                return RedirectToAction("Details", new { id = newEmployee.Id });
+            }
+            return View();
+        }
         //public JsonResult Details()
         //{
         //    Employee model = _employeeRepository.GetEmployee(1);

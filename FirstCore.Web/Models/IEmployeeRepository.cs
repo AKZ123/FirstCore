@@ -12,5 +12,8 @@ namespace FirstCore.Web.Models
 
         //Part: 27
         IEnumerable<Employee> GetAllEmployee();
+
+        //Part:41
+        Employee Add(Employee employee);
     }
 }
