@@ -1,44 +1,48 @@
-﻿@model IEnumerable<FirstCore.Web.Models.Employee>
+﻿@*  @model IEnumerable<FirstCore.Web.Models.Employee>
+    Part: 31  *@
 
-@{
-    //Part:29
-    //Layout = "~/Views/Shared/_Layout.cshtml";   remove for _ViewStart.cshtml  Part:30
-    //Layout = "_Layout2";   
-    ViewBag.Title= "Employee List";
-}
+    @model IEnumerable<Employee>
+
+    @{
+        //Part:29
+        //Layout = "~/Views/Shared/_Layout.cshtml";   remove for _ViewStart.cshtml  Part:30
+        //Layout = "_Layout2";
+        ViewBag.Title = "Employee List";
+    }
 
 
-<table class="table">
-    <thead>
-        <tr>
-            <th> Id  </th>
-            <th> Name </th>
-            <th> Email </th>
-            <th>Department </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @item.Id
-            </td>
-            <td>
-                @item.Name
-            </td>
-            <td>
-                @item.Email
-            </td>
-            <td>
-                @item.Department
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <table class="table">
+        <thead>
+            <tr>
+                <th> Id  </th>
+                <th> Name </th>
+                <th> Email </th>
+                <th>Department </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.Id
+                    </td>
+                    <td>
+                        @item.Name
+                    </td>
+                    <td>
+                        @item.Email
+                    </td>
+                    <td>
+                        @item.Department
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>

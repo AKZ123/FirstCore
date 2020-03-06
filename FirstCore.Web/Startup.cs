@@ -46,11 +46,11 @@ namespace FirstCore.Web
             //app.UseMvcWithDefaultRoute();
 
 
+            //Part: 32
             //app.UseMvc(routes =>
             //{
             //    routes.MapRoute( "default","{controller=Home}/{action=Index}/{id?}");
             //});
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
