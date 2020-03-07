@@ -15,5 +15,9 @@ namespace FirstCore.Web.Models
 
         //Part:41
         Employee Add(Employee employee);
+
+        //Part: 49
+        Employee Update(Employee emploteeChanges);
+        Employee Delete(int id);
     }
 }

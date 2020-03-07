@@ -6,6 +6,7 @@ using FirstCore.Web.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,7 +15,7 @@ namespace FirstCore.Web
 {
     public class Startup
     {
-        private IConfiguration _config;
+        private readonly IConfiguration _config;
 
         public Startup(IConfiguration config)
         {
@@ -24,10 +25,12 @@ namespace FirstCore.Web
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            //Part: 48
+            services.AddDbContextPool<AppDbContext>(options => options.UseSqlServer(_config.GetConnectionString("EmployeeDBConnection")));
             //Part: 16,
             services.AddMvc().AddXmlSerializerFormatters();
-            //Part:19,44
-            services.AddSingleton<IEmployeeRepository, MockEmployeeRepository>();
+            //Part:19,44, (49)
+            services.AddScoped<IEmployeeRepository, SQLEmployeeRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
