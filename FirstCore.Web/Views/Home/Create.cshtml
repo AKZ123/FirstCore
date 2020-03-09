@@ -1,14 +1,14 @@
 ﻿@*
-    Part:40,42,44
+    Part:40,42,44,   53
 @inject IEmployeeRepository _empRepository   *@
 
-@model Employee
+@model EmployeeCreateViewModel
 @{
     ViewBag.Title = "Create";
     //Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-    <form asp-controller="home" asp-action="create" method="post" class="mt-3">
+    <form enctype="multipart/form-data" asp-controller="home" asp-action="create" method="post" class="mt-3">
         <div class="form-group row">
             <label asp-for="Name" class="col-sm-2 col-form-label"></label>
             <div class="col-sm-10">
@@ -36,6 +36,17 @@
             </div>
         </div>
 
+        @* Part:53 *@
+        <div class="form-group row">
+            <label asp-for="Photo" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-10">
+                <div class="custom-file">
+                    <input asp-for="Photo" class="form-control custom-file-input">
+                    <label class="custom-file-label">Choose File...</label>
+                </div>
+            </div>
+        </div>
+
         <div asp-validation-summary="All" class="text-danger"></div>
 
         <div class="form-group row">
@@ -44,12 +55,24 @@
             </div>
         </div>
 
-                    @* Part: 44
+        @* Part: 44
         <div class="form-group row">
             <div class="col-sm-10">
                 Total Employee Count: @_empRepository.GetAllEmployee().Count()
             </div>
         </div>      *@
+
+        @* Part: 53 *@
+        @section Scripts{ 
+        <script>
+            $(document).ready(function () {
+                $('.custom-file-input').on("change", function () {
+                    var fileName = $(this).val().split("\\").pop();
+                    $(this).next('.custom-file-label').html(fileName);
+                })
+            });
+        </script>
+        }
     </form>
 
 

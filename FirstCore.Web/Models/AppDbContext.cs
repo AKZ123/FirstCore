@@ -16,5 +16,12 @@ namespace FirstCore.Web.Models
         }
 
         public DbSet<Employee> Employees { get; set; }
+
+        //Part: 51
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Seed();
+            //ModelBuilderExtensions class
+        }
     }
 }

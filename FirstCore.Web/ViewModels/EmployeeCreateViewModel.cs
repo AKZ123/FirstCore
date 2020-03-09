@@ -1,15 +1,16 @@
-﻿using System;
+﻿using FirstCore.Web.Models;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FirstCore.Web.Models
+namespace FirstCore.Web.ViewModels
 {
-    //Paret:18,40,42,43,52
-    public class Employee
+    //Part: 53
+    public class EmployeeCreateViewModel
     {
-        public int Id { get; set; }
 
         [Required, MaxLength(50, ErrorMessage = "Name cannot exceed 50 characters")]
         public string Name { get; set; }
@@ -20,6 +21,6 @@ namespace FirstCore.Web.Models
         public string Email { get; set; }
         [Required]
         public Dept? Department { get; set; }
-        public string PhotoPath { get; set; }
+        public IFormFile Photo { get; set; }
     }
 }
