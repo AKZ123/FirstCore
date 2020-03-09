@@ -21,6 +21,9 @@ namespace FirstCore.Web.ViewModels
         public string Email { get; set; }
         [Required]
         public Dept? Department { get; set; }
-        public IFormFile Photo { get; set; }
+        //public IFormFile Photo { get; set; }
+
+        //Part: 54
+        public List<IFormFile> Photos { get; set; }
     }
 }
