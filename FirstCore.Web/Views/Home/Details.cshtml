@@ -29,7 +29,9 @@ Part: 31  *@
             <div class="card-footer text-center">
                 @*Part:35*@
                 <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Back</a>
-                <a href="#" class="btn btn-primary">Edit</a>
+
+                @* Part: 55 *@
+                <a asp-controller="home" asp-action="edit" asp-route-id="@Model.Employee.Id" class="btn btn-primary">Edit</a>
                 <a href="#" class="btn btn-danger">Delete</a>
             </div>
         </div>
