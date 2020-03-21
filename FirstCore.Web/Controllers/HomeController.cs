@@ -34,15 +34,25 @@ namespace FirstCore.Web.Controllers
         //[Route("Home/Details/{id?}")]
         public ViewResult Details(int? id)
         {
+                   //60  throw new Exception("An Error in Detail View");
             //Employee model = _employeeRepository.GetEmployee(1);
             //ViewBag.PageTitle="Employee Detsil";
             //return View(model);
 
+            //Part: 57
+            Employee employee = _employeeRepository.GetEmployee(id.Value);
+
+            if (employee == null)
+            {
+                Response.StatusCode = 404;
+                return View("EmployeeNotFound",id.Value);
+            }
+
             //Part:26
             HomeDetailsViewModel homeDetailsViewModel = new HomeDetailsViewModel()
             {
-                Employee = _employeeRepository.GetEmployee(id ?? 1),
-                PageTitle = "This is Details page"
+                Employee = employee,   //_employeeRepository.GetEmployee(id ?? 1),
+                PageTitle = "This is Employee Details page"
             };
 
             return View(homeDetailsViewModel);

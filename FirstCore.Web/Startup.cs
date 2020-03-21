@@ -37,9 +37,18 @@ namespace FirstCore.Web
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             //Default 1 && Part: 11,12
-            if (env.IsDevelopment())
+            if (env.IsDevelopment())   //Production
             {
                 app.UseDeveloperExceptionPage();
+            }// Part: 58
+            else
+            {
+                //Part: 60   Global exception
+                app.UseExceptionHandler("/Error");
+
+                //app.UseStatusCodePages();                           for URL misteck
+                //app.UseStatusCodePagesWithRedirects("/Error/{0}");
+                app.UseStatusCodePagesWithReExecute("/Error/{0}");
             }
 
             //Part:12, & for access file/folder wwwroot(css,images,js,lib=>bootstrap,jquery)
