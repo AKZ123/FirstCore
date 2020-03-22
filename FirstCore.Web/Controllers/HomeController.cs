@@ -8,19 +8,23 @@ using FirstCore.Web.ViewModels;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace FirstCore.Web.Controllers
 {
     public class HomeController : Controller
     {
-        //Part:18
+        //Part:18,53,64
         private readonly IEmployeeRepository _employeeRepository;
-        private readonly IHostingEnvironment hostingEnvironment;
+        //private readonly IHostingEnvironment hostingEnvironment;
+        private readonly IWebHostEnvironment hostingEnvironment;
+        private readonly ILogger<HomeController> logger;
 
-        public HomeController(IEmployeeRepository employeeRepository, IHostingEnvironment hostingEnvironment)
+        public HomeController(IEmployeeRepository employeeRepository, IWebHostEnvironment hostingEnvironment, ILogger<HomeController> logger)
         {
             _employeeRepository = employeeRepository;
             this.hostingEnvironment = hostingEnvironment;
+            this.logger = logger;
         }
 
         public IActionResult Index()
@@ -34,7 +38,15 @@ namespace FirstCore.Web.Controllers
         //[Route("Home/Details/{id?}")]
         public ViewResult Details(int? id)
         {
-                   //60  throw new Exception("An Error in Detail View");
+            //Part:64
+            logger.LogTrace("Trace Log");
+            logger.LogDebug("Debug Log");
+            logger.LogInformation("Information Log");
+            logger.LogWarning("Warning Log");
+            logger.LogError("Error Log");
+            logger.LogCritical("Critical Log");
+            //throw new Exception("An Error in Detail View");        //60  
+
             //Employee model = _employeeRepository.GetEmployee(1);
             //ViewBag.PageTitle="Employee Detsil";
             //return View(model);

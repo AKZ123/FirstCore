@@ -5,12 +5,21 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace FirstCore.Web.Controllers
 {
     //Part: 58
     public class ErrorController : Controller
     {
+        //Part: 62
+        private readonly ILogger<ErrorController> logger;
+
+        public ErrorController(ILogger<ErrorController> logger)
+        {
+            this.logger = logger;
+        }
+
         [Route("Error/{statusCode}")]
         public IActionResult HttpStatusCodeHandler(int statusCode)
         {
@@ -36,9 +45,12 @@ namespace FirstCore.Web.Controllers
         {
             var exceptionDetails = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
 
-           ViewBag.ExceptionPath = exceptionDetails.Path;
-            ViewBag.ExceptionMessage = exceptionDetails.Error.Message;
-            ViewBag.Stacktrace = exceptionDetails.Error.StackTrace;
+            //ViewBag.ExceptionPath = exceptionDetails.Path;
+            // ViewBag.ExceptionMessage = exceptionDetails.Error.Message;
+            // ViewBag.Stacktrace = exceptionDetails.Error.StackTrace;
+
+            //Part: 62
+            logger.LogError($"This parh {exceptionDetails.Path} threw an exception {exceptionDetails.Error}");
 
             return View("Error");
         }

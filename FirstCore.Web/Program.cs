@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+using NLog.Extensions.Logging;
+
 namespace FirstCore.Web
 {
     public class Program
@@ -18,6 +20,14 @@ namespace FirstCore.Web
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+            .ConfigureLogging((hostingContext, logger)=>     /* Part: 63 */
+            {
+                logger.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                logger.AddConsole();
+                logger.AddDebug();
+                logger.AddEventSourceLogger();
+                logger.AddNLog();
+            })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
