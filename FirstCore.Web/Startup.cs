@@ -6,6 +6,7 @@ using FirstCore.Web.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,15 @@ namespace FirstCore.Web
         {
             //Part: 48
             services.AddDbContextPool<AppDbContext>(options => options.UseSqlServer(_config.GetConnectionString("EmployeeDBConnection")));
+            //Part: 65.3
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
+            //Part: 68.1
+            //services.Configure<IdentityOptions>(option =>
+            //{
+            //    option.Password.RequiredLength = 10;
+            //    option.Password.RequiredUniqueChars = 3;
+            //});
+
             //Part: 16,
             services.AddMvc().AddXmlSerializerFormatters();
             //Part:19,44, (49)
@@ -56,8 +66,8 @@ namespace FirstCore.Web
             //Default 2
             app.UseRouting();
             //app.UseMvcWithDefaultRoute();
-
-
+            //Part: 65.4
+            app.UseAuthentication();
             //Part: 32,36
             //app.UseMvc(routes =>
             //{

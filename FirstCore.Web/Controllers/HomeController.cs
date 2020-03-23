@@ -39,12 +39,13 @@ namespace FirstCore.Web.Controllers
         public ViewResult Details(int? id)
         {
             //Part:64
-            logger.LogTrace("Trace Log");
-            logger.LogDebug("Debug Log");
-            logger.LogInformation("Information Log");
-            logger.LogWarning("Warning Log");
-            logger.LogError("Error Log");
-            logger.LogCritical("Critical Log");
+            //logger.LogTrace("Trace Log");
+            //logger.LogDebug("Debug Log");
+            //logger.LogInformation("Information Log");
+            //logger.LogWarning("Warning Log");
+            //logger.LogError("Error Log");
+            //logger.LogCritical("Critical Log");
+
             //throw new Exception("An Error in Detail View");        //60  
 
             //Employee model = _employeeRepository.GetEmployee(1);
