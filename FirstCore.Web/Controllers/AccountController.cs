@@ -58,5 +58,32 @@ namespace FirstCore.Web.Controllers
             await signInManager.SignOutAsync();
             return RedirectToAction("index", "Home");
         }
+
+        //Part: 70.2
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        //Part: 70.4
+        [HttpPost]
+        public async Task<IActionResult> Login(UserLoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password,model.RememberMe, false); //(RememberMe) isPersistent: false for Session Cooce(Sign in Lost after browser close) & (RememberMe)isPersistent: true for Permanent Cooce(Sign in also stay after browser close)
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("index", "Home");
+                }
+
+                ModelState.AddModelError(string.Empty, "Invalid Login Attempt");                
+            }
+            return View(model);
+        }
+
+
     }
 }
