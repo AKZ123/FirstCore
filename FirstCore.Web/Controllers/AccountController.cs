@@ -66,9 +66,9 @@ namespace FirstCore.Web.Controllers
             return View();
         }
 
-        //Part: 70.4
+        //Part: 70.4,  72
         [HttpPost]
-        public async Task<IActionResult> Login(UserLoginViewModel model)
+        public async Task<IActionResult> Login(UserLoginViewModel model, string ReturnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -76,7 +76,16 @@ namespace FirstCore.Web.Controllers
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("index", "Home");
+                    //Part: 72,  73
+                    if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
+                    {
+                        return Redirect(ReturnUrl);
+                        //return LocalRedirect(ReturnUrl);
+                    }
+                    else
+                    {
+                        return RedirectToAction("index", "Home");
+                    }
                 }
 
                 ModelState.AddModelError(string.Empty, "Invalid Login Attempt");                

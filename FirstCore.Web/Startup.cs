@@ -38,7 +38,7 @@ namespace FirstCore.Web
             //});
 
             //Part: 16,
-            services.AddMvc().AddXmlSerializerFormatters();
+            services.AddMvc().AddXmlSerializerFormatters();  //Authorize set for whole application on this line p 71
             //Part:19,44, (49)
             services.AddScoped<IEmployeeRepository, SQLEmployeeRepository>();
         }
@@ -68,6 +68,8 @@ namespace FirstCore.Web
             //app.UseMvcWithDefaultRoute();
             //Part: 65.4
             app.UseAuthentication();
+            //Part: 71.1
+            app.UseAuthorization();
             //Part: 32,36
             //app.UseMvc(routes =>
             //{

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FirstCore.Web.Models;
 using FirstCore.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FirstCore.Web.Controllers
 {
+    [Authorize]   //71.3
     public class HomeController : Controller
     {
         //Part:18,53,64
@@ -27,6 +29,7 @@ namespace FirstCore.Web.Controllers
             this.logger = logger;
         }
 
+        [AllowAnonymous]  //71.3
         public IActionResult Index()
         {
             //Part:27
@@ -36,6 +39,7 @@ namespace FirstCore.Web.Controllers
 
         //Part:20, 33
         //[Route("Home/Details/{id?}")]
+        [AllowAnonymous]  //71.3
         public ViewResult Details(int? id)
         {
             //Part:64
@@ -71,8 +75,9 @@ namespace FirstCore.Web.Controllers
             return View(homeDetailsViewModel);
         }
 
-        //Part:40
+        //Part:40, 
         [HttpGet]
+        //[Authorize]   //71.2
         public ViewResult Create()
         {
             return View();
@@ -80,6 +85,7 @@ namespace FirstCore.Web.Controllers
 
         //Part:41,42,  (53,54)
         [HttpPost]
+        //[Authorize]  //71
         public IActionResult Create(EmployeeCreateViewModel model)
         {
             if (ModelState.IsValid)
@@ -121,8 +127,9 @@ namespace FirstCore.Web.Controllers
         //    return View();
         //}
 
-        //Part:55
+        //Part:55,
         [HttpGet]
+        //[Authorize]  //71
         public ViewResult Edit(int id)
         {
             Employee employee = _employeeRepository.GetEmployee(id);
@@ -139,6 +146,7 @@ namespace FirstCore.Web.Controllers
 
         //Part: 56
         [HttpPost]
+        //[Authorize]  //71
         public IActionResult Edit(EmployeeEditViewModel model)
         {
             if (ModelState.IsValid)
