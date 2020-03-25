@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FirstCore.Web.Utilities;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -11,6 +13,10 @@ namespace FirstCore.Web.ViewModels
     {
         [Required]
         [EmailAddress]
+        //Part: 75.2
+        [Remote(action: "IsEmailIsUse", controller: "Account")]
+        //Part : 76.2
+        [ValidEmailDomain(allowedDomain:"Laboursoft.com", ErrorMessage = "Email domain must be Laboursoft.com")]
         public string Email { get; set; }
 
         [Required]

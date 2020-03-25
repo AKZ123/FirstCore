@@ -28,6 +28,22 @@ namespace FirstCore.Web.Controllers
             return View();
         }
 
+        //Part: 75.1
+        [AcceptVerbs("Get", "Post")]
+        public async Task<IActionResult> IsEmailIsUse(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                return Json(true);
+            }
+            else
+            {
+                return Json($"Email {email} is already use");
+            }
+        }
+
         //Part: 67.2
         [HttpPost]
         public async Task<IActionResult> Register(UserRegisterViewModel model)
