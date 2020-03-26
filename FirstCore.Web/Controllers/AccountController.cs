@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FirstCore.Web.Models;
 using FirstCore.Web.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +14,10 @@ namespace FirstCore.Web.Controllers
     //Part: 66.2
     public class AccountController : Controller
     {
-        //Part: 67.1
-        private readonly UserManager<IdentityUser> userManager;
-        private readonly SignInManager<IdentityUser> signInManager;
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        //Part: 67.1,  77.2.3
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly SignInManager<ApplicationUser> signInManager;
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -50,7 +51,9 @@ namespace FirstCore.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+                //var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+                //Part:        77.2.1,                                                       77.4.3
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, City=model.City };
                 var result = await userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)

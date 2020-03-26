@@ -16,7 +16,7 @@ namespace FirstCore.Web.ViewModels
         //Part: 75.2
         [Remote(action: "IsEmailIsUse", controller: "Account")]
         //Part : 76.2
-        [ValidEmailDomain(allowedDomain:"Laboursoft.com", ErrorMessage = "Email domain must be Laboursoft.com")]
+        // [ValidEmailDomain(allowedDomain:"Laboursoft.com", ErrorMessage = "Email domain must be Laboursoft.com")]          for test
         public string Email { get; set; }
 
         [Required]
@@ -27,5 +27,8 @@ namespace FirstCore.Web.ViewModels
         [Display(Name = "Confirm Password")]
         [Compare("Password", ErrorMessage ="PassWord and Confirm password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        //Part: 77.4.1
+        public string City { get; set; }
     }
 }

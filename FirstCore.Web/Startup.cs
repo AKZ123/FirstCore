@@ -28,8 +28,8 @@ namespace FirstCore.Web
         {
             //Part: 48
             services.AddDbContextPool<AppDbContext>(options => options.UseSqlServer(_config.GetConnectionString("EmployeeDBConnection")));
-            //Part: 65.3
-            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
+            //Part: 65.3,        77.2.2
+            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
             //Part: 68.1
             //services.Configure<IdentityOptions>(option =>
             //{
