@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FirstCore.Web.Models;
 using FirstCore.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -112,6 +113,13 @@ namespace FirstCore.Web.Controllers
             return View(model);
         }
 
+        //Part: 83.2
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
 
     }
 }
