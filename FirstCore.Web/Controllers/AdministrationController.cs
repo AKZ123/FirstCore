@@ -215,6 +215,35 @@ namespace FirstCore.Web.Controllers
             return RedirectToAction("EditRole", new { id = roleId });
         }
 
+        //Part: 88.1
+        [HttpPost]
+        public async Task<IActionResult> DeleteRole(string id)
+        {
+            var role = await roleManager.FindByIdAsync(id);
+
+            if (role == null)
+            {
+                ViewBag.ErrorMessage = $"Role with id = {id} can not be found";
+                return View("NotFound");
+            }
+            else
+            {
+                var result = await roleManager.DeleteAsync(role);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("ListRoles");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+                return View("ListRoles");
+            }
+        }
+
         //Part: 84.1
         [HttpGet]
         public IActionResult ListUsers()

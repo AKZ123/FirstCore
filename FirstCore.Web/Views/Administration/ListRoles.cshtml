@@ -23,25 +23,44 @@
                 <h5 class="card-title">@role.Name</h5>
             </div>
             <div class="card-footer">
-                @* Part: 80.1 *@
-                <a asp-controller="Administration" asp-action="EditRole" asp-route-id="@role.Id" class="btn btn-primary">Edit</a>
-                <a href="#" class="btn btn-primary">Delete</a>
+                @* Part: 88.2 *@
+                <form method="post" asp-controller="Administration" asp-action="DeleteRole" asp-route-id="@role.Id">
+                    @* Part: 80.1 *@
+                    <a asp-controller="Administration" asp-action="EditRole" asp-route-id="@role.Id" class="btn btn-primary">Edit</a>
+
+                    <span>|</span>
+                    <span id="confirmDeleteSpan_@role.Id" style="display:none">
+                        <span>Are you sure you want to delete?</span>
+                        <button type="submit" class="btn btn-danger">Yes</button>
+                        <a  class="btn btn-primary" onclick="confirmDelete('@role.Id', false)">No</a>
+                    </span>
+
+                    <span id="DeleteSpan_@role.Id">
+                        <a  class="btn btn-danger" onclick="confirmDelete('@role.Id', true)">Delete</a>
+                    </span>
+                </form>
+
             </div>
         </div>
     }
 }
 else
 {
-<div class="card">
-    <div class="card-header">
-        No Role created yet
+    <div class="card">
+        <div class="card-header">
+            No Role created yet
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">
+                Use the button below to create a role
+            </h5>
+            <a asp-controller="Administration" asp-action="CreateRole" class="btn btn-primary" style="width:auto">Create Role </a>
+        </div>
     </div>
-    <div class="card-body">
-        <h5 class="card-title">
-            Use the button below to create a role
-        </h5>
-        <a asp-controller="Administration" asp-action="CreateRole" class="btn btn-primary" style="width:auto">Create Role </a>
-    </div>
-</div>
 }
 
+
+@* Part: 88.3 *@
+@section Scripts{
+    <script src="~/js/CustomScript.js"></script>
+}
