@@ -215,5 +215,102 @@ namespace FirstCore.Web.Controllers
             return RedirectToAction("EditRole", new { id = roleId });
         }
 
+        //Part: 84.1
+        [HttpGet]
+        public IActionResult ListUsers()
+        {
+            var users = userManager.Users;
+            return View(users);
+        }
+
+        //Part: 85.2.1
+        [HttpGet]
+        public async Task<IActionResult> EditUser(string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User with id = {id} can not be found";
+                return View("NotFound");
+            }
+
+            var userRoles = await userManager.GetRolesAsync(user);
+            var userClaims = await userManager.GetClaimsAsync(user);
+
+            var model = new EditUserViewModel
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                City = user.City,
+                Claims = userClaims.Select(c => c.Value).ToList(),
+                Roles = userRoles.ToList()
+            };
+            return View(model);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditUser(EditUserViewModel model)
+        {
+            var user = await userManager.FindByIdAsync(model.Id);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User with id = {model.Id} can not be found";
+                return View("NotFound");
+            }
+            else
+            {
+                user.UserName = model.UserName;
+                user.Email = model.Email;
+                user.City = model.City;
+
+                var result = await userManager.UpdateAsync(user);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("ListUsers");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+                return View(model);
+            }
+        }
+
+
+
+        //Part: 86.2
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User with id = {id} can not be found";
+                return View("NotFound");
+            }
+            else
+            {
+                var result = await userManager.DeleteAsync(user);
+
+                if (result.Succeeded)
+                    return RedirectToAction("ListUsers");
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+                return View("ListUsers");
+            }
+        }
+
     }
 }

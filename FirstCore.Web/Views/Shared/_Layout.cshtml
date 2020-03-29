@@ -54,8 +54,13 @@
                     @* Part:83.1 *@
                     @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                     {
-                        <li class="nav-item">
-                            <a asp-action="ListRoles" asp-controller="Administration" class="nav-link">Manage Roles</a>
+                        //Part: 84.3
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMemuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Manage</a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMemuLink">
+                                <a asp-action="ListUsers" asp-controller="Administration" class="dropdown-item">Users</a>
+                                <a asp-action="ListRoles" asp-controller="Administration" class="dropdown-item">Roles</a>
+                            </div>   
                         </li>
                     }
                 </ul>
@@ -87,7 +92,7 @@
             @RenderBody()
         </div>
 
-        @* Part: 29 *@
+        @* Part: 29, use- 87.3.2 *@
         @if (IsSectionDefined("Scripts"))
         {
             @RenderSection("Scripts", required: true)

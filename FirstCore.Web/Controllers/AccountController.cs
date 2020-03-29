@@ -59,6 +59,12 @@ namespace FirstCore.Web.Controllers
 
                 if (result.Succeeded)
                 {
+                    //Part:84.4    //for Staying signedIn User on signIn after create a New User  
+                    if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                    {
+                        return RedirectToAction("ListUsers", "Administration");
+                    }
+
                     await signInManager.SignInAsync(user, isPersistent: false); //isPersistent: false for Session Cooce(Sign in Lost after browser close) & isPersistent: true for Permanent Cooce(Sign in also stay after browser close)
                     return RedirectToAction("index", "Home");
                 }
