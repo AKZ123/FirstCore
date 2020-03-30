@@ -26,6 +26,12 @@ namespace FirstCore.Web.Models
 
             modelBuilder.Seed();
             //ModelBuilderExtensions class
+
+            //Part:89
+            //foreach (var foreignkey in modelBuilder.Model.GetEntityTypes().SelectMany(e=>e.GetForeignKeys()))
+            //{
+            //    foreignkey.DeleteBehavior = DeleteBehavior.Restrict;
+            //}
         }
     }
 }

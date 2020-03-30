@@ -163,7 +163,7 @@ namespace FirstCore.Web.Controllers
                         string filePath=Path.Combine(hostingEnvironment.WebRootPath, "images", model.ExistingPhotoPath);
                         System.IO.File.Delete(filePath);
                     }
-                    employee.PhotoPath = processUploadedFile(model);
+                    employee.PhotoPath = ProcessUploadedFile(model);
                 }
      
                 Employee updateEmployee = _employeeRepository.Update(employee);
@@ -172,7 +172,7 @@ namespace FirstCore.Web.Controllers
             return View();
         }
 
-        private string processUploadedFile(EmployeeEditViewModel model)
+        private string ProcessUploadedFile(EmployeeEditViewModel model)
         {
             string uniqueFileName = null;
             if (model.Photos != null && model.Photos.Count > 0)
