@@ -39,6 +39,27 @@ namespace FirstCore.Web
 
             //Part: 16,
             services.AddMvc().AddXmlSerializerFormatters();  //Authorize set for whole application on this line p 71
+            //Part: 97.1
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.AccessDeniedPath = new PathString("/Administration/AccessDenied");
+            });
+            //Part:94.1
+            services.AddAuthorization(options => 
+            {
+                options.AddPolicy("DeleteRolePolicy",
+                    policy => policy.RequireClaim("Delete Role")
+                                    //.RequireClaim("Create Role")
+                                    );
+                //Part: 95
+                //options.AddPolicy("AdminRolePolicy",
+                //  policy => policy.RequireRole("Admin"));
+                //Part: 96.1
+                options.AddPolicy("EditRolePolicy",
+                   //policy => policy.RequireClaim("Edit Role"));
+                    policy => policy.RequireClaim("Edit Role","true"));  //Part: 98.4
+        });
+
             //Part:19,44, (49)
             services.AddScoped<IEmployeeRepository, SQLEmployeeRepository>();
         }

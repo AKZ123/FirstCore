@@ -2,6 +2,10 @@
 
 @model IEnumerable<IdentityRole>
 
+@* Part:96.2 *@
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService authorizationService 
+
 @{
     ViewBag.Title = "All Roles";
     // Layout = "~/Views/Shared/_Layout.cshtml";
@@ -25,18 +29,24 @@
             <div class="card-footer">
                 @* Part: 88.2 *@
                 <form method="post" asp-controller="Administration" asp-action="DeleteRole" asp-route-id="@role.Id">
-                    @* Part: 80.1 *@
-                    <a asp-controller="Administration" asp-action="EditRole" asp-route-id="@role.Id" class="btn btn-primary">Edit</a>
 
-                    <span>|</span>
+                    @* Part:96.3 *@
+                    @if ((await authorizationService.AuthorizeAsync(User, "EditRolePolicy")).Succeeded)
+                    {
+                        @* Part: 80.1 *@
+                        <a asp-controller="Administration" asp-action="EditRole" asp-route-id="@role.Id" class="btn btn-primary">Edit</a>
+
+                        <span>|</span>
+                    }
+
                     <span id="confirmDeleteSpan_@role.Id" style="display:none">
                         <span>Are you sure you want to delete?</span>
                         <button type="submit" class="btn btn-danger">Yes</button>
-                        <a  class="btn btn-primary" onclick="confirmDelete('@role.Id', false)">No</a>
+                        <a class="btn btn-primary" onclick="confirmDelete('@role.Id', false)">No</a>
                     </span>
 
                     <span id="DeleteSpan_@role.Id">
-                        <a  class="btn btn-danger" onclick="confirmDelete('@role.Id', true)">Delete</a>
+                        <a class="btn btn-danger" onclick="confirmDelete('@role.Id', true)">Delete</a>
                     </span>
                 </form>
 

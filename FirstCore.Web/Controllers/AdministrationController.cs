@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using FirstCore.Web.Models;
 using FirstCore.Web.ViewModels;
@@ -78,6 +79,7 @@ namespace FirstCore.Web.Controllers
 
         //Part: 80.2.3
         [HttpGet]
+        [Authorize(Policy = "EditRolePolicy")]   //Part: 96.4
         public async Task<IActionResult> EditRole(string id)
         {
             var role = await roleManager.FindByIdAsync(id);
@@ -106,6 +108,7 @@ namespace FirstCore.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "EditRolePolicy")]
         public async Task<IActionResult> EditRole(EditRoleViewModel model)
         {
             var role = await roleManager.FindByIdAsync(model.Id);
@@ -188,8 +191,7 @@ namespace FirstCore.Web.Controllers
             {
                 var user = await userManager.FindByIdAsync(model[i].UserId);
 
-                IdentityResult result = null;
-
+                IdentityResult result;
                 if (model[i].IsSelected && !(await userManager.IsInRoleAsync(user, role.Name)))
                 {
                     result = await userManager.AddToRoleAsync(user, role.Name);
@@ -220,8 +222,10 @@ namespace FirstCore.Web.Controllers
             return RedirectToAction("EditRole", new { id = roleId });
         }
 
+
         //Part: 88.1
         [HttpPost]
+        [Authorize(Policy = "DeleteRolePolicy")] //Part:94.2
         public async Task<IActionResult> DeleteRole(string id)
         {
             var role = await roleManager.FindByIdAsync(id);
@@ -293,7 +297,7 @@ namespace FirstCore.Web.Controllers
                 UserName = user.UserName,
                 Email = user.Email,
                 City = user.City,
-                Claims = userClaims.Select(c => c.Value).ToList(),
+                Claims = userClaims.Select(c => c.Type + ":" + c.Value).ToList(),  //Part:98.2,          Claims = userClaims.Select(c => c.Value).ToList(),
                 Roles = userRoles.ToList()
             };
             return View(model);
@@ -428,5 +432,87 @@ namespace FirstCore.Web.Controllers
             return RedirectToAction("EditUser", new { id = userId });
         }
 
+
+
+        //Part: 93.5
+        [HttpGet]
+        public async Task<IActionResult> ManageUserClaims(string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User with id = {userId} can not be found";
+                return View("NotFound");
+            }
+
+            var existingUserClaims = await userManager.GetClaimsAsync(user);
+
+            var model = new UserClaimsViewModel
+            {
+                UserId=userId
+            };
+
+            foreach (Claim claim in ClaimsStore.AllClaims)
+            {
+                UserClaim userClaim = new UserClaim
+                {
+                    ClaimType=claim.Type
+                };
+
+                //if (existingUserClaims.Any(c => c.Type == claim.Type))
+                if (existingUserClaims.Any(c => c.Type == claim.Type && c.Value== "true"))  //Part: 98.3
+                {
+                    userClaim.IsSelected = true;
+                }
+
+                model.Cliams.Add(userClaim);
+            }
+            return View(model);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ManageUserClaims(UserClaimsViewModel model)
+        {
+            var user = await userManager.FindByIdAsync(model.UserId);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User with id = {model.UserId} can not be found";
+                return View("NotFound");
+            }
+
+            var claims = await userManager.GetClaimsAsync(user);
+            var result = await userManager.RemoveClaimsAsync(user, claims);
+
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("", "Cannot remove user existing claims");
+                return View(model);
+            }
+
+            //result = await userManager.AddClaimsAsync(user, model.Cliams.Where(c => c.IsSelected).Select(c => new Claim(c.ClaimType, c.ClaimType)));
+            //Part: 98.1
+            result = await userManager.AddClaimsAsync(user, model.Cliams.Select(c => new Claim(c.ClaimType, c.IsSelected ? "true": "false")));
+
+
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("", "Cannot add selected claims to user");
+                return View(model);
+            }
+         
+            return RedirectToAction("EditUser", new { id = model.UserId});
+        }
+
+
+        //Part: 97.2
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }

@@ -88,7 +88,8 @@
             }
         </div>
         <div class="card-footer">
-            <a asp-controller="Administration" asp-action="EditUsersInRole" asp-route-roleId="@Model.Id" class="btn btn-primary" style="width:auto">Manage Claims of this User</a>
+            @* Part: 93.1 *@
+            <a asp-controller="Administration" asp-action="ManageUserClaims" asp-route-userId="@Model.Id" class="btn btn-primary" style="width:auto">Manage Claims of this User</a>
         </div>
     </div>
 </form>
