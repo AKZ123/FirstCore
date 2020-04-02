@@ -58,7 +58,7 @@
                         <a asp-action="Create" asp-controller="Home" class="nav-link">Create</a>
                     </li>
                     @* Part:83.1 *@
-                    @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                    @if (signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Super Admin")))
                     {
                         //Part: 84.3
                         <li class="nav-item dropdown">

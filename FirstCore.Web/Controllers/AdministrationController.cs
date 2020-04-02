@@ -14,9 +14,9 @@ using Microsoft.Extensions.Logging;
 namespace FirstCore.Web.Controllers
 {
     //Part:71,  82
-    //[Authorize(Roles ="Admin,User")]    only Admin or User Roles  user can access
+    [Authorize(Roles ="Admin,Super Admin")]  //  only Admin or User Roles  user can access
 
-    [Authorize(Roles = "Admin")]        //both Admin And User Roles  user only can access
+    //[Authorize(Roles = "Admin")]        //both Admin And User Roles  user only can access
     //[Authorize(Roles = "User")]
 
     //[AllowAnonymous]                    any one can access
@@ -79,7 +79,7 @@ namespace FirstCore.Web.Controllers
 
         //Part: 80.2.3
         [HttpGet]
-        [Authorize(Policy = "EditRolePolicy")]   //Part: 96.4
+        //[Authorize(Policy = "EditRolePolicy")]   //Part: 96.4    off P:101.4.1
         public async Task<IActionResult> EditRole(string id)
         {
             var role = await roleManager.FindByIdAsync(id);
@@ -108,7 +108,7 @@ namespace FirstCore.Web.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "EditRolePolicy")]
+        //[Authorize(Policy = "EditRolePolicy")]                 //off P:101.4.2
         public async Task<IActionResult> EditRole(EditRoleViewModel model)
         {
             var role = await roleManager.FindByIdAsync(model.Id);
@@ -366,6 +366,7 @@ namespace FirstCore.Web.Controllers
 
         //Part: 91.3
         [HttpGet]
+        [Authorize(Policy = "EditRolePolicy")]  //Part: 101.4.3
         public async Task<IActionResult> ManageUserRoles(string userId)
         {
             ViewBag.userId = userId;
@@ -402,6 +403,7 @@ namespace FirstCore.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "EditRolePolicy")]  //Post: 101.4.4
         public async Task<IActionResult> ManageUserRoles(List<UserRolesViewModel> model, string userId)
         {
             var user = await userManager.FindByIdAsync(userId);

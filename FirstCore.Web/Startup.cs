@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FirstCore.Web.Models;
+using FirstCore.Web.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -52,16 +54,30 @@ namespace FirstCore.Web
                                     //.RequireClaim("Create Role")
                                     );
                 //Part: 95
-                //options.AddPolicy("AdminRolePolicy",
-                //  policy => policy.RequireRole("Admin"));
+                options.AddPolicy("AdminRolePolicy",
+                  policy => policy.RequireRole("Admin"));
                 //Part: 96.1
-                options.AddPolicy("EditRolePolicy",
-                   //policy => policy.RequireClaim("Edit Role"));
-                    policy => policy.RequireClaim("Edit Role","true"));  //Part: 98.4
-        });
+                //options.AddPolicy("EditRolePolicy",
+                //   //policy => policy.RequireClaim("Edit Role"));
+                //    policy => policy.RequireClaim("Edit Role","true"));  //Part: 98.4
+                //Part: 99.1
+                //options.AddPolicy("EditRolePolicy",
+                //    policy => policy.RequireAssertion(context=>
+                //    context.User.IsInRole("Admin") &&
+                //    context.User.HasClaim(claim => claim.Type == "Edit Role" && claim.Value=="true") ||
+                //    context.User.IsInRole("Super Admin")
+                //    ));
+                //Part: 101.3.1
+                options.AddPolicy("EditRolePolicy", policy => policy.AddRequirements(new ManageAdminRolesAndClaimsRequirement()));
+            });
 
             //Part:19,44, (49)
             services.AddScoped<IEmployeeRepository, SQLEmployeeRepository>();
+
+            //Part:101.3.2
+            services.AddSingleton<IAuthorizationHandler, CanEditOnlyOtherAdminRolesAndClaimsHandler>();
+            //Part:102.2
+            services.AddSingleton<IAuthorizationHandler, SuperAdminHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
