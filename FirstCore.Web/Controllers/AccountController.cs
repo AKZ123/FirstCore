@@ -142,7 +142,8 @@ namespace FirstCore.Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginCallbak(string returnUrl =null, string remoteError =null)
         {
-            returnUrl = returnUrl ?? Url.Content("~/");
+            //returnUrl = returnUrl ?? Url.Content("~/");
+            returnUrl ??=  Url.Content("~/");
 
             UserLoginViewModel userLoginViewModel = new UserLoginViewModel
             {

@@ -48,7 +48,12 @@ namespace FirstCore.Web
                 options.ClientId = "71904163316-djrdeocs3mk29a8gb10mud62e6vkl5ru.apps.googleusercontent.com";
                 options.ClientSecret = "l80WOhAKmIAK4fpdMKETLc6R";
                 //options.CallbackPath = "";  //Part:107.2
-            });
+            })
+             .AddFacebook(options =>             //Part:109
+             {
+                 options.AppId = "547600819507295";
+                 options.AppSecret = "601f266bfde5a0eb66aefd7458f021c7";
+             }) ;
             //Part: 97.1
             services.ConfigureApplicationCookie(options =>
             {
