@@ -1,0 +1,5 @@
+Google
+Your Client ID
+71904163316-djrdeocs3mk29a8gb10mud62e6vkl5ru.apps.googleusercontent.com
+Your Client Secret
+l80WOhAKmIAK4fpdMKETLc6R

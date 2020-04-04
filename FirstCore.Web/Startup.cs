@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,6 +42,13 @@ namespace FirstCore.Web
 
             //Part: 16,
             services.AddMvc().AddXmlSerializerFormatters();  //Authorize set for whole application on this line p 71
+            //Part:106.1
+            services.AddAuthentication().AddGoogle(options =>
+            {
+                options.ClientId = "71904163316-djrdeocs3mk29a8gb10mud62e6vkl5ru.apps.googleusercontent.com";
+                options.ClientSecret = "l80WOhAKmIAK4fpdMKETLc6R";
+                //options.CallbackPath = "";  //Part:107.2
+            });
             //Part: 97.1
             services.ConfigureApplicationCookie(options =>
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using FirstCore.Web.Models;
 using FirstCore.Web.ViewModels;
@@ -85,11 +86,16 @@ namespace FirstCore.Web.Controllers
             return RedirectToAction("index", "Home");
         }
 
-        //Part: 70.2
+        //Part: 70.2,  106.3
         [HttpGet]
-        public IActionResult Login()
+        public async Task<IActionResult> Login(string returnUrl)
         {
-            return View();
+            UserLoginViewModel model = new UserLoginViewModel
+            {
+                ReturnUrl = returnUrl,
+                ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
+            };
+            return View(model);
         }
 
         //Part: 70.4,  72
@@ -117,6 +123,83 @@ namespace FirstCore.Web.Controllers
                 ModelState.AddModelError(string.Empty, "Invalid Login Attempt");                
             }
             return View(model);
+        }
+
+
+        //Part: 106.5
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult ExternalLogin(string provider, string returnUrl)
+        {
+            var redirectUrl = Url.Action("ExternalLoginCallbak", "Account", new { ReturnUrl = returnUrl });
+
+            var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+
+            return new ChallengeResult(provider, properties);
+        }
+
+        //Part: 107.1
+        [AllowAnonymous]
+        public async Task<IActionResult> ExternalLoginCallbak(string returnUrl =null, string remoteError =null)
+        {
+            returnUrl = returnUrl ?? Url.Content("~/");
+
+            UserLoginViewModel userLoginViewModel = new UserLoginViewModel
+            {
+                ReturnUrl = returnUrl,
+                ExternalLogins=(await signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
+            };
+
+            if (remoteError != null)
+            {
+                ModelState.AddModelError(string.Empty, $"Error from external provider: {remoteError}");
+
+                return View("Login", userLoginViewModel);
+            }
+
+            var info = await signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                ModelState.AddModelError(string.Empty, $"Error from loading external login information");
+
+                return View("Login", userLoginViewModel);
+            }
+
+            var signinResult = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);  //Check AspNetUserLogins table 
+
+            if (signinResult.Succeeded)
+            {
+                return LocalRedirect(returnUrl);
+            }
+            else                   
+            {
+                var email = info.Principal.FindFirst(ClaimTypes.Email).ToString();
+
+                if (email != null)
+                {
+                    var user = await userManager.FindByEmailAsync(email);     //search local account of this email from aspNetUsers table
+
+                    if (user ==null)
+                    {
+                        user = new ApplicationUser
+                        {
+                            UserName =info.Principal.FindFirstValue(ClaimTypes.Email),
+                            Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                        };
+
+                        await userManager.CreateAsync(user);        //create a Local Account
+                    }
+                    await userManager.AddLoginAsync(user, info);                //on AspNetUserLogins table Add a user 
+                    await signInManager.SignInAsync(user, isPersistent: false);
+
+                    return LocalRedirect(returnUrl);
+                }
+
+                ViewBag.ErrorTitle = $"Email claim not received from: {info.LoginProvider}";
+                ViewBag.ErrorMessage = $"Please contract support on akader080@gmail.com";
+
+                return View("Error");
+            }
         }
 
         //Part: 83.2
