@@ -32,7 +32,14 @@ namespace FirstCore.Web
             //Part: 48
             services.AddDbContextPool<AppDbContext>(options => options.UseSqlServer(_config.GetConnectionString("EmployeeDBConnection")));
             //Part: 65.3,        77.2.2
-            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
+            services.AddIdentity<ApplicationUser, IdentityRole>(options => 
+            {
+                //    option.Password.RequiredLength = 10;
+                //    option.Password.RequiredUniqueChars = 3;
+
+                options.SignIn.RequireConfirmedEmail = true;    //Part: 112.1
+            }).AddEntityFrameworkStores<AppDbContext>()
+              .AddDefaultTokenProviders();  //Part: 113.3
             //Part: 68.1
             //services.Configure<IdentityOptions>(option =>
             //{

@@ -8,6 +8,7 @@ using FirstCore.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,13 +17,16 @@ namespace FirstCore.Web.Controllers
     //Part: 66.2
     public class AccountController : Controller
     {
-        //Part: 67.1,  77.2.3
+        //Part: 67.1,  77.2.3,   113.1
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        private readonly ILogger<AccountController> logger;
+
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.logger = logger;
         }
 
         [HttpGet]
@@ -60,14 +64,26 @@ namespace FirstCore.Web.Controllers
 
                 if (result.Succeeded)
                 {
+                    //Part: 113.2.1
+                    var token = await userManager.GenerateEmailConfirmationTokenAsync(user);  //generate Email Confirmation Token
+                    var confirmationLink = Url.Action("ConfirmAccountByEmail", "Account", new { userId = user.Id, token = token }, Request.Scheme); //generate Email Confirmation Link
+                    logger.Log(LogLevel.Warning, confirmationLink);  //61-64 
+                    //
+
                     //Part:84.4    //for Staying signedIn User on signIn after create a New User  
                     if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                     {
                         return RedirectToAction("ListUsers", "Administration");
                     }
 
-                    await signInManager.SignInAsync(user, isPersistent: false); //isPersistent: false for Session Cooce(Sign in Lost after browser close) & isPersistent: true for Permanent Cooce(Sign in also stay after browser close)
-                    return RedirectToAction("index", "Home");
+                    //113.2.2
+                    //await signInManager.SignInAsync(user, isPersistent: false); //isPersistent: false for Session Cooce(Sign in Lost after browser close) & isPersistent: true for Permanent Cooce(Sign in also stay after browser close)
+                    //return RedirectToAction("index", "Home");
+                    ViewBag.ErrorTitle = "Your Registration successful";
+                    ViewBag.ErrorMessage = "Befor you can Login, please confirm your email," +
+                                            "by clicking on the confirmation link we have emailed you";
+                    return View("Error");
+                    //
                 }
 
                 foreach (IdentityError error in result.Errors)
@@ -76,6 +92,33 @@ namespace FirstCore.Web.Controllers
                 }
             }
             return View(model);
+        }
+
+        //Part: 113.3
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmAccountByEmail(string userId, string token)
+        {
+            if (userId == null || token == null)
+            {
+                return RedirectToAction("index", "Home");
+            }
+
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"The User ID {userId} is invalid";
+                return View("NotFound");
+            }
+
+            var result = await userManager.ConfirmEmailAsync(user, token);  //set EmailConfirmed value false to true in AspNetUsers Table
+            if (result.Succeeded)
+            {
+                return View();
+            }
+
+            ViewBag.ErrorTitle = "Email cannot be confirmed";
+            return View("Error");
         }
 
         //Part: 69.4
@@ -102,8 +145,20 @@ namespace FirstCore.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(UserLoginViewModel model, string ReturnUrl)
         {
+            //Part: 112.2.1
+            model.ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();   //check EmailConfirmed value is true from AspNetUsers Table
+
             if (ModelState.IsValid)
             {
+                //112.2.2
+                var user = await userManager.FindByEmailAsync(model.Email);
+                if (user != null && !user.EmailConfirmed  && (await userManager.CheckPasswordAsync(user, model.Password)))
+                {                                                   //for prevent Account Numeration & RootForce attacks
+                    ModelState.AddModelError(string.Empty, "Email not confirmed yet");
+                    return View(model);
+                }
+                //
+
                 var result = await signInManager.PasswordSignInAsync(model.Email, model.Password,model.RememberMe, false); //(RememberMe) isPersistent: false for Session Cooce(Sign in Lost after browser close) & (RememberMe)isPersistent: true for Permanent Cooce(Sign in also stay after browser close)
 
                 if (result.Succeeded)
@@ -166,6 +221,22 @@ namespace FirstCore.Web.Controllers
                 return View("Login", userLoginViewModel);
             }
 
+            //Part: 112.3.1
+            var email = info.Principal.FindFirst(ClaimTypes.Email).ToString();
+            ApplicationUser user = null;
+
+            if (email != null)
+            {
+                user = await userManager.FindByEmailAsync(email);
+
+                if (user != null && !user.EmailConfirmed)
+                {
+                    ModelState.AddModelError(string.Empty, "Email not confirmed yet");
+                    return View("Login", userLoginViewModel);
+                }
+            }
+            //
+
             var signinResult = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);  //Check AspNetUserLogins table 
 
             if (signinResult.Succeeded)
@@ -174,11 +245,11 @@ namespace FirstCore.Web.Controllers
             }
             else                   
             {
-                var email = info.Principal.FindFirst(ClaimTypes.Email).ToString();
+                //var email = info.Principal.FindFirst(ClaimTypes.Email).ToString();
 
                 if (email != null)
                 {
-                    var user = await userManager.FindByEmailAsync(email);     //search local account of this email from aspNetUsers table
+                    //user = await userManager.FindByEmailAsync(email);     //search local account of this email from aspNetUsers table
 
                     if (user ==null)
                     {
