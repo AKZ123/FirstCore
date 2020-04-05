@@ -222,7 +222,7 @@ namespace FirstCore.Web.Controllers
             }
 
             //Part: 112.3.1
-            var email = info.Principal.FindFirst(ClaimTypes.Email).ToString();
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
             ApplicationUser user = null;
 
             if (email != null)
@@ -260,6 +260,16 @@ namespace FirstCore.Web.Controllers
                         };
 
                         await userManager.CreateAsync(user);        //create a Local Account
+
+                        //Part: 114.1
+                        var token = await userManager.GenerateEmailConfirmationTokenAsync(user);  //generate Email Confirmation Token for external login user
+                        var confirmationLink = Url.Action("ConfirmAccountByEmail", "Account", new { userId = user.Id, token = token }, Request.Scheme); //generate Email Confirmation Link
+                        logger.Log(LogLevel.Warning, confirmationLink);  //p61-64 
+
+                        ViewBag.ErrorTitle = "Registration successful";
+                        ViewBag.ErrorMessage = "Befor you can Login, please confirm your email," + "by clicking on the confirmation link we have emailed you";
+                        return View("Error");
+                        //
                     }
                     await userManager.AddLoginAsync(user, info);                //on AspNetUserLogins table Add a user 
                     await signInManager.SignInAsync(user, isPersistent: false);
