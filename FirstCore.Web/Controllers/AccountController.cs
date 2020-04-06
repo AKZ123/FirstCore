@@ -292,5 +292,77 @@ namespace FirstCore.Web.Controllers
             return View();
         }
 
+        //Part: 115.3
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByEmailAsync(model.Email);
+
+                if (user != null && await userManager.IsEmailConfirmedAsync(user))
+                {
+                    var token = await userManager.GeneratePasswordResetTokenAsync(user); //Password Reset Token Generate
+
+                    var passwordResetLink = Url.Action("ResetPassword", "Account", new { email = model.Email, token = token},Request.Scheme);   //Password Reset Link build
+
+                    logger.Log(LogLevel.Warning, passwordResetLink);
+
+                    return View("ForgotPassworrdConfirmation");
+                }
+                return View("ForgotPassworrdConfirmation");
+            }
+            return View(model);
+        }
+
+
+        //Part: 116.1
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string token, string email)
+        {
+            if (token == null || email == null)
+            {
+                ModelState.AddModelError("", "Invalid password reset token");
+            }
+            return View();
+        }
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByEmailAsync(model.Email);
+
+                if (user != null)
+                {
+                    var reset = await userManager.ResetPasswordAsync(user, model.Token, model.Password);
+                    if (reset.Succeeded)
+                    {
+                        return View("ResetPasswordConfirmation");
+                    }
+
+                    foreach (var error in reset.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+
+                    return View(model);
+                }
+                return View("ResetPasswordConfirmation");
+            }
+            return View(model);
+        }
     }
 }
