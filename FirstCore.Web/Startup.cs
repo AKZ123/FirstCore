@@ -38,8 +38,15 @@ namespace FirstCore.Web
                 //    option.Password.RequiredUniqueChars = 3;
 
                 options.SignIn.RequireConfirmedEmail = true;    //Part: 112.1
+
+                options.Tokens.EmailConfirmationTokenProvider = "CustomEmailConfirmation";  //Part:119.3.2
             }).AddEntityFrameworkStores<AppDbContext>()
-              .AddDefaultTokenProviders();  //Part: 113.3
+              .AddDefaultTokenProviders()  //Part: 113.3
+              .AddTokenProvider<CustomEmailConfirmationTokenProvider<ApplicationUser>>("CustomEmailConfirmation");   //Part: 119.3.1
+            //Part: 118
+            services.Configure<DataProtectionTokenProviderOptions>(o => o.TokenLifespan = TimeSpan.FromHours(5)); //set all Token lifespan/life time 5 hours from default 1 day.
+            //Part: 119.3.3
+            services.Configure<CustomEmailConfirmationTokenProviderOptions>(o => o.TokenLifespan = TimeSpan.FromDays(3)); 
             //Part: 68.1
             //services.Configure<IdentityOptions>(option =>
             //{
