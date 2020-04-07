@@ -1,15 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace FirstCore.Web.Models
 {
-    //Paret:18,40,42,43,52
+    //Paret:18,40,42,43,52, 120
     public class Employee
     {
         public int Id { get; set; }
+
+        //Part:120.4
+        [NotMapped]
+        public string EncryptedId { get; set; }
+        //
 
         [Required, MaxLength(50, ErrorMessage = "Name cannot exceed 50 characters")]
         public string Name { get; set; }

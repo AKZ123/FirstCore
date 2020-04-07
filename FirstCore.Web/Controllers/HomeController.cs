@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FirstCore.Web.Models;
+using FirstCore.Web.Security;
 using FirstCore.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,31 +18,43 @@ namespace FirstCore.Web.Controllers
     [Authorize]   //71.3
     public class HomeController : Controller
     {
-        //Part:18,53,64
+        //Part:18,53,64,  120.3.1
         private readonly IEmployeeRepository _employeeRepository;
         //private readonly IHostingEnvironment hostingEnvironment;
         private readonly IWebHostEnvironment hostingEnvironment;
         private readonly ILogger<HomeController> logger;
 
-        public HomeController(IEmployeeRepository employeeRepository, IWebHostEnvironment hostingEnvironment, ILogger<HomeController> logger)
+        private readonly IDataProtector protector;
+        //Part:-                                                                                                                              120.3.2,                                        120.3.3                  
+        public HomeController(IEmployeeRepository employeeRepository, IWebHostEnvironment hostingEnvironment, ILogger<HomeController> logger, IDataProtectionProvider dataProtectionProvider, DataProtectionPurposeStrings dataProtectionPurposeStrings)
         {
             _employeeRepository = employeeRepository;
             this.hostingEnvironment = hostingEnvironment;
             this.logger = logger;
+            //120.3.4
+            protector = dataProtectionProvider.CreateProtector(dataProtectionPurposeStrings.EmployeeIdRouteValue);
         }
 
         [AllowAnonymous]  //71.3
         public IActionResult Index()
         {
             //Part:27
-            var model = _employeeRepository.GetAllEmployee();
+            //var model = _employeeRepository.GetAllEmployee();
+            //Part: 120.5
+            var model = _employeeRepository.GetAllEmployee()
+                                .Select(e =>
+                                {
+                                    e.EncryptedId = protector.Protect(e.Id.ToString());
+                                    return e;
+                                });
+            //
             return View(model);
         }
 
         //Part:20, 33
         //[Route("Home/Details/{id?}")]
         [AllowAnonymous]  //71.3
-        public ViewResult Details(int? id)
+        public ViewResult Details(string id)  //(int? id)   p120
         {
             //Part:64
             //logger.LogTrace("Trace Log");
@@ -56,13 +70,15 @@ namespace FirstCore.Web.Controllers
             //ViewBag.PageTitle="Employee Detsil";
             //return View(model);
 
+            //Part: 120.7.1
+            int employeeId = Convert.ToInt32(protector.Unprotect(id));
             //Part: 57
-            Employee employee = _employeeRepository.GetEmployee(id.Value);
+            Employee employee = _employeeRepository.GetEmployee(employeeId); //(id.Value);  p120
 
             if (employee == null)
             {
                 Response.StatusCode = 404;
-                return View("EmployeeNotFound",id.Value);
+                return View("EmployeeNotFound", employeeId);  //id.Value);  p120
             }
 
             //Part:26

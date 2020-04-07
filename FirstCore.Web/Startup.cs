@@ -105,6 +105,8 @@ namespace FirstCore.Web
             services.AddSingleton<IAuthorizationHandler, CanEditOnlyOtherAdminRolesAndClaimsHandler>();
             //Part:102.2
             services.AddSingleton<IAuthorizationHandler, SuperAdminHandler>();
+            //Part: 120.2
+            services.AddSingleton<DataProtectionPurposeStrings>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
