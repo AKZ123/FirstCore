@@ -159,8 +159,10 @@ namespace FirstCore.Web.Controllers
                 }
                 //
 
-                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password,model.RememberMe, false); //(RememberMe) isPersistent: false for Session Cooce(Sign in Lost after browser close) & (RememberMe)isPersistent: true for Permanent Cooce(Sign in also stay after browser close)
-
+                //var result = await signInManager.PasswordSignInAsync(model.Email, model.Password,model.RememberMe, false); //(RememberMe) isPersistent: false for Session Cooce(Sign in Lost after browser close) & (RememberMe)isPersistent: true for Permanent Cooce(Sign in also stay after browser close)
+                //Part: 123.2.1
+                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, true); //for sateing lockoutOnFailure=true, in AspNetUsers table AccessFailedCount colum increase to 5 time for user try to login with incrouct password. and then after LockoutEnd colum set the time of user Locked
+                //
                 if (result.Succeeded)
                 {
                     //Part: 72,  73
@@ -175,6 +177,12 @@ namespace FirstCore.Web.Controllers
                     }
                 }
 
+                //Part:123.2.2
+                if (result.IsLockedOut)
+                {
+                    return View("AccountLocked");
+                }
+                //
                 ModelState.AddModelError(string.Empty, "Invalid Login Attempt");                
             }
             return View(model);
@@ -349,6 +357,12 @@ namespace FirstCore.Web.Controllers
                     var reset = await userManager.ResetPasswordAsync(user, model.Token, model.Password);
                     if (reset.Succeeded)
                     {
+                        //Part: 123.4
+                        if (await userManager.IsLockedOutAsync(user))
+                        {
+                            await userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow);  //if user was Locked then set LockoutEnd column Null in AspNetUser table.
+                        }
+                        //
                         return View("ResetPasswordConfirmation");
                     }
 

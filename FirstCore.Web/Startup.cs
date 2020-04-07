@@ -40,6 +40,10 @@ namespace FirstCore.Web
                 options.SignIn.RequireConfirmedEmail = true;    //Part: 112.1
 
                 options.Tokens.EmailConfirmationTokenProvider = "CustomEmailConfirmation";  //Part:119.3.2
+                //Part: 123.1
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+                //
             }).AddEntityFrameworkStores<AppDbContext>()
               .AddDefaultTokenProviders()  //Part: 113.3
               .AddTokenProvider<CustomEmailConfirmationTokenProvider<ApplicationUser>>("CustomEmailConfirmation");   //Part: 119.3.1
